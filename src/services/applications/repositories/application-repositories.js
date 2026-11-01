@@ -51,7 +51,7 @@ class ApplicationRepositories {
 
     async editApplicationStatus(id, status) {
         const result = await this.pool.query({
-            text: 'UPDATE applications SET status = $1, updated_at = current_timestamp WHERE id = $2 RETURNING id',
+            text: 'UPDATE applications SET status = $1, updated_at = current_timestamp WHERE id = $2 RETURNING id, user_id, job_id',
             values: [status, id]
         });
 
@@ -60,7 +60,7 @@ class ApplicationRepositories {
 
     async deleteApplication(id) {
         const result = await this.pool.query({
-            text: 'DELETE FROM applications WHERE id = $1 RETURNING id',
+            text: 'DELETE FROM applications WHERE id = $1 RETURNING id, user_id, job_id',
             values: [id]
         });
 

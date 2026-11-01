@@ -1,9 +1,13 @@
 import BookmarkRepositories from "../repositories/bookmark-repositories.js"
 import {NotFoundError} from "../../../exceptions/index.js";
 import response from "../../../utils/response.js";
+import CacheService from "../../../cache/redis-service.js";
 
 export const addBookmark = async (req, res) => {
     const bookmark = await BookmarkRepositories.addBookmark(req.user.id, req.params.jobId);
+
+    await CacheService.delete(`bookmarks:${req.user.id}`);
+
     return response(res, 201, 'Bookmark berhasil ditambahkan', {id: bookmark.id});
 };
 
@@ -18,7 +22,13 @@ export const getBookmarkById = async (req, res, next) => {
 };
 
 export const getBookmarks = async (req, res) => {
-    const bookmarks = await BookmarkRepositories.getBookmarksByUserId(req.user.id);
+    const {data: bookmarks, source} = await CacheService.getOrSet(
+        `bookmarks:${req.user.id}`,
+        () => BookmarkRepositories.getBookmarksByUserId(req.user.id)
+    );
+
+    res.set('X-Data-Source', source);
+
     return response(res, 200, 'Bookmark berhasil ditampilkan', {bookmarks});
 };
 
@@ -28,6 +38,8 @@ export const deleteBookmark = async (req, res, next) => {
     if (!bookmark) {
         return next(new NotFoundError('Gagal menghapus bookmark. Bookmark tidak ditemukan'));
     }
+
+    await CacheService.delete(`bookmarks:${req.user.id}`);
 
     return response(res, 200, 'Bookmark berhasil dihapus', {id: bookmark.id})
 }

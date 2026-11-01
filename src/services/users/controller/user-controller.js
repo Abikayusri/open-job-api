@@ -1,6 +1,7 @@
 import UserRepositories from "../repositories/user-repositories.js";
 import response from '../../../utils/response.js';
 import {NotFoundError} from '../../../exceptions/index.js';
+import CacheService from '../../../cache/redis-service.js';
 
 export const createUser = async (req, res) => {
     const user = await UserRepositories.createUser(req.validated);
@@ -8,11 +9,16 @@ export const createUser = async (req, res) => {
 };
 
 export const getUserById = async (req, res, next) => {
-    const user = await UserRepositories.getUserById(req.params.id);
+    const {data: user, source} = await CacheService.getOrSet(
+        `user:${req.params.id}`,
+        () => UserRepositories.getUserById(req.params.id),
+    );
 
     if (!user) {
         return next(new NotFoundError('User tidak ditemukan'));
     }
+
+    res.set('X-Data-Source', source);
 
     return response(res, 200, 'User berhasil ditampilkan', user);
 };
