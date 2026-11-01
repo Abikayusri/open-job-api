@@ -8,6 +8,6 @@ const router = Router();
 router.post('/documents', authenticateToken, upload.single('document'), uploadDocument);
 router.get('/documents', getDocuments);
 router.get('/documents/:id', getDocumentById);
-router.delete('/documents/:id', deleteDocument);
+router.delete('/documents/:id', authenticateToken, deleteDocument);
 
 export default router;

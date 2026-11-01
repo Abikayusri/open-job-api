@@ -6,15 +6,15 @@ class DocumentRepositories {
         this.pool = new Pool;
     }
 
-    async createDocument({userId, fileName, originalName, size}) {
+    async createDocument({userId, filename, originalName, size}) {
         const id = `document-${nanoid(16)}`;
 
         const result = await this.pool.query({
             text: 'INSERT INTO documents(id, user_id, filename, original_name, size) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-            values: [id, userId, fileName, originalName, size]
+            values: [id, userId, filename, originalName, size]
         });
 
-        return result.row[0];
+        return result.rows[0];
     }
 
     async getDocuments() {
@@ -27,6 +27,8 @@ class DocumentRepositories {
             text: 'SELECT * FROM documents WHERE id = $1',
             values: [id]
         });
+
+        return result.rows[0];
     }
 
     async deleteDocument(id, userId) {

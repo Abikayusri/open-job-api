@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import * as fs from "node:fs";
+import * as fs from "node:fs/promises";
 import DocumentRepositories from "../repositories/document-repositories.js";
 import response from "../../../utils/response.js";
 import {InvariantError, NotFoundError} from "../../../exceptions/index.js";
