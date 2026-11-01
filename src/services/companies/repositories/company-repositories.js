@@ -1,30 +1,32 @@
 import {Pool} from "pg";
 import {nanoid} from "nanoid";
 
+const COMPANY_COLUMNS = 'id, name, location, description, created_at, updated_at';
+
 class CompanyRepositories {
     constructor() {
         this.pool = new Pool();
     }
 
-    async createCompany({name, location, description}) {
+    async createCompany({name, location, description}, owner) {
         const id = `company-${nanoid(16)}`;
 
         const result = await this.pool.query({
-            text: 'INSERT INTO companies(id, name, location, description) VALUES ($1, $2, $3, $4) RETURNING id',
-            values: [id, name, location, description]
+            text: 'INSERT INTO companies(id, name, location, description, owner) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+            values: [id, name, location, description, owner]
         });
 
         return result.rows[0];
     }
 
     async getCompanies() {
-        const result = await this.pool.query('SELECT * FROM companies');
+        const result = await this.pool.query(`SELECT ${COMPANY_COLUMNS} FROM companies`);
         return result.rows;
     }
 
     async getCompanyById(id) {
         const result = await this.pool.query({
-            text: 'SELECT * FROM companies WHERE id = $1',
+            text: `SELECT ${COMPANY_COLUMNS} FROM companies WHERE id = $1`,
             values: [id]
         });
 

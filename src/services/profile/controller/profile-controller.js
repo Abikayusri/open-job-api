@@ -15,7 +15,7 @@ export const getProfile = async (req, res, next) => {
 };
 
 export const getProfileApplications = async (req, res) => {
-    const applications = await ApplicationRepositories.getApplicationsByUserId(req.user.id);
+    const applications = await ApplicationRepositories.getProfileApplications(req.user.id);
 
     return response(res, 200, 'Lamaran berhasil ditampilkan', {applications})
 };

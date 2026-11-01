@@ -6,6 +6,13 @@ const SELECT_JOBS = `SELECT jobs.*, companies.name AS company_name, categories.n
     LEFT JOIN companies ON companies.id = jobs.company_id
     LEFT JOIN categories ON categories.id = jobs.category_id`;
 
+const SELECT_JOB_LIST = `SELECT jobs.id, jobs.company_id, jobs.category_id, jobs.title, jobs.job_type,
+    jobs.experience_level, jobs.location_type, jobs.location_city, jobs.salary_min, jobs.salary_max, jobs.status,
+    companies.name AS company_name, categories.name AS category_name
+    FROM jobs
+    LEFT JOIN companies ON companies.id = jobs.company_id
+    LEFT JOIN categories ON categories.id = jobs.category_id`;
+
 class JobRepositories {
     constructor() {
         this.pool = new Pool();
@@ -43,7 +50,7 @@ class JobRepositories {
         }
 
         const where = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
-        const result = await this.pool.query({text: `${SELECT_JOBS}${where}`, values});
+        const result = await this.pool.query({text: `${SELECT_JOB_LIST}${where}`, values});
 
         return result.rows;
     }

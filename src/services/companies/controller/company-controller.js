@@ -4,7 +4,7 @@ import {NotFoundError} from "../../../exceptions/index.js";
 import CacheService from "../../../cache/redis-service.js";
 
 export const createCompany = async (req, res) => {
-    const company = await CompanyRepositories.createCompany(req.validated);
+    const company = await CompanyRepositories.createCompany(req.validated, req.user.id);
     return response(res, 201, 'Company berhasil ditambahkan', {id: company.id});
 };
 

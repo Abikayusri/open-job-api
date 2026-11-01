@@ -27,10 +27,14 @@ class BookmarkRepositories {
 
     async getBookmarksByUserId(userId) {
         const result = await this.pool.query({
-            text: `SELECT bookmarks.*, jobs.title AS job_title
+            text: `SELECT bookmarks.*, jobs.title AS job_title, jobs.description AS job_description, jobs.company_id,
+                       companies.name AS company_name, jobs.category_id, categories.name AS category_name,
+                       jobs.job_type, jobs.experience_level, jobs.location_type, jobs.location_city,
+                       jobs.salary_min, jobs.salary_max, jobs.is_salary_visible, jobs.status AS job_status
                    FROM bookmarks
-                            LEFT JOIN jobs
-                                      ON jobs.id = bookmarks.job_id
+                            LEFT JOIN jobs ON jobs.id = bookmarks.job_id
+                            LEFT JOIN companies ON companies.id = jobs.company_id
+                            LEFT JOIN categories ON categories.id = jobs.category_id
                    WHERE bookmarks.user_id = $1`,
             values: [userId]
         });
